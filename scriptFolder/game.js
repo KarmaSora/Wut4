@@ -17,14 +17,23 @@ let ctx;
 let canvas;
 let widthOfCanvas;
 
+let arrayOfCats;
 /** Körs då sidan är laddad */
 function init() {
-    birdEntity = new Sprite(xPos, yPos, birdImg, speed, true);
+    birdEntity = new Sprite(xPos, yPos + 200, birdImg, speed, true);
 
-    catEntity =  new Sprite(xPos +100, yPos-100, catImage, speed, true);
-    console.log("Bird Life status: "+birdEntity.alive);
 
-    console.log("Cat Life status: "+catEntity.alive);
+    arrayOfCats = new Array();
+    for (let j = 0; j < 6; j++) {
+        catEntity = new Sprite(xPos + 100 * j, yPos, catImage, speed, true);
+        arrayOfCats.push(catEntity);
+    }
+
+
+
+    console.log("Bird Life status: " + birdEntity.alive);
+
+    console.log("Cat Life status: " + catEntity.alive);
 
 
 
@@ -76,9 +85,13 @@ function render() {
 
 
     birdEntity.draw(ctx);
-    catEntity.draw(ctx);
- 
-  
+
+
+    for (let i = 0; i < 5; i++) {
+        if (arrayOfCats[i].alive) {
+            ctx.drawImage(arrayOfCats[i].img, arrayOfCats[i].x, arrayOfCats[i].y);
+        }
+    }
 
     ctx.restore();
 }
@@ -87,75 +100,106 @@ function render() {
 function update() {
     //birdEntity move
 
-    if (birdEntity.x > 0) {
-        if ('ArrowLeft' in keysDown) { // Vänster     
-            birdEntity.x -= 5;
+    if (birdEntity.alive === true) {
+        if (birdEntity.x > 0) {
+            if ('ArrowLeft' in keysDown) { // Vänster     
+                birdEntity.x -= 5;
+            }
         }
-    }
-    if (birdEntity.x < canvas.width - birdEntity.img.width) {
-        if ('ArrowRight' in keysDown) { // Höger
-            birdEntity.x += 5;
+        if (birdEntity.x < canvas.width - birdEntity.img.width) {
+            if ('ArrowRight' in keysDown) { // Höger
+                birdEntity.x += 5;
+            }
         }
-    }
-    if (birdEntity.y > 0) {
-        if ('ArrowUp' in keysDown) { // Upp
-            birdEntity.y -= 5;
+        if (birdEntity.y > 0) {
+            if ('ArrowUp' in keysDown) { // Upp
+                birdEntity.y -= 5;
+            }
         }
-    }
-    if (birdEntity.y < canvas.height - birdEntity.img.height) {
-        if ('ArrowDown' in keysDown) { // Ner
-            birdEntity.y += 5;
+        if (birdEntity.y < canvas.height - birdEntity.img.height) {
+            if ('ArrowDown' in keysDown) { // Ner
+                birdEntity.y += 5;
+            }
         }
-    }
-    if ('k' in keysDown) { // Ner
-        console.log("clear");
+        if ('k' in keysDown) { // Ner
+            console.log("clear");
+        }
     }
 
 
+    
     //catEntity Move 
+    if (catEntity.alive === true) {
+        if (catEntity.x > 0) {
+            if ('a' in keysDown) { // Vänster     
+                catEntity.x -= 5;
+            }
+        }
 
-    if (catEntity.x > 0) {
-        if ('a' in keysDown) { // Vänster     
-            catEntity.x -= 5;
+        if (catEntity.x < canvas.width - catEntity.img.width) {
+            if ('d' in keysDown) { // Höger
+                catEntity.x += 5;
+            }
+        }
+
+        if (catEntity.y > 0) {
+            if ('w' in keysDown) { // Upp
+                catEntity.y -= 5;
+            }
+        }
+
+        if (catEntity.y < canvas.height - catEntity.img.height) {
+            if ('s' in keysDown) { // Ner
+                catEntity.y += 5;
+            }
+        }
+
+
+
+        if ('k' in keysDown) { // test
+            console.log("clear");
+        }
+
+
+    }
+
+
+
+    //checkHit(birdEntity, catEntity);
+
+
+    for (let i = 0; i < 5; i++) { //NY
+        if (arrayOfCats[i].alive) {
+            if (checkHit(birdEntity, arrayOfCats[i])) {
+                arrayOfCats[i].alive = false;
+            }
+
         }
     }
 
-    if (catEntity.x < canvas.width - catEntity.img.width) {
-        if ('d' in keysDown) { // Höger
-            catEntity.x += 5;
-        }
-    }
-
-    if (catEntity.y > 0) {
-        if ('w' in keysDown) { // Upp
-            catEntity.y -= 5;
-        }
-    }
-
-    if (catEntity.y < canvas.height - catEntity.img.height) {
-        if ('s' in keysDown) { // Ner
-            catEntity.y += 5;
-        }
-    }
 
 
-
-    if ('k' in keysDown) { // test
-        console.log("clear");
-    }
-
-    checkHit(birdEntity, catEntity);
-
-    if(birdEntity.alive === false){
+    if (birdEntity.alive === false) {
         delete birdEntity;
+        //ändra så att Entitiys sparas i en array och deletas/ tas bort, om alive == false;
+        //   console.log("dead");
+    }
+
+
+    if (catEntity.alive === false) {
+        delete catEntity;
 
         //ändra så att Entitiys sparas i en array och deletas/ tas bort, om alive == false;
-     //   console.log("dead");
+        //   console.log("dead");
     }
 
 
 
-   
+
+    if ('r' in keysDown) { // test
+        console.log("restarting games");
+        gamePageRestart();
+    }
 
 }
 
@@ -166,28 +210,30 @@ function getYPos() {
     return yPos;
 }
 
-function checkHit(spriteOne, spriteTwo){
-    if(spriteOne.alive == true && spriteTwo.alive == true){
-	if (spriteTwo.x <= (spriteOne.x + spriteOne.img.width) && 
-			spriteOne.x <= (spriteTwo.x + spriteTwo.img.width)
-			&& spriteTwo.y <= (spriteOne.y + spriteOne.img.height) && 
-			spriteOne.y <= (spriteTwo.y + spriteTwo.img.height)){
-                console.log("hit");
-                spriteOne.alive = false;
-                spriteTwo.alive = false;
-                console.log(spriteOne.alive)
-                console.log(spriteTwo.alive)
+function checkHit(spriteOne, spriteTwo) {
+    if (spriteOne.alive == true && spriteTwo.alive == true) {
+        if (spriteTwo.x <= (spriteOne.x + spriteOne.img.width) &&
+            spriteOne.x <= (spriteTwo.x + spriteTwo.img.width)
+            && spriteTwo.y <= (spriteOne.y + spriteOne.img.height) &&
+            spriteOne.y <= (spriteTwo.y + spriteTwo.img.height)) {
+            console.log("hit");
+            spriteOne.alive = false;
+            spriteTwo.alive = false;
+            console.log(spriteOne.alive);
+            console.log(spriteTwo.alive);
+            console.log("birdEntity and catEntity are dead and cant move")
 
 
-                
 
-		return true;
-	}else
-		return false;
+
+
+            return true;
+        } else
+            return false;
     }
 }
 
-function gamePageRestart(){
+function gamePageRestart() {
     window.location.reload();
 }
 
