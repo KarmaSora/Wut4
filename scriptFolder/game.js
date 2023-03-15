@@ -6,7 +6,7 @@ let catImage = new Image();
 catImage.src = "images/cat.png";
 
 // Position
-let xPos = 260, yPos = 220, speed = 20;
+let xPos = 260, yPos = 220, speed = 200;
 
 //importera filen, fixa felet  -Karam
 let birdEntity, catEntity;
@@ -18,8 +18,12 @@ let canvas;
 let widthOfCanvas;
 
 let arrayOfCats;
+let then;
+
 /** Körs då sidan är laddad */
 function init() {
+
+    then = Date.now();
     birdEntity = new Sprite(xPos, yPos + 200, birdImg, speed, true);
 
 
@@ -65,8 +69,15 @@ function keyUp(e) {
 
 /** Spellopen */
 function gameLoop() {
-    update();
+
+    let now = Date.now();
+    let deltaTime = now - then;
+
+    
+    update(deltaTime/1000);
     render();
+
+    then = now;
 
     // Bytt till requestAnimFrame istället för setInterval
     requestAnimationFrame(function () {
@@ -97,28 +108,29 @@ function render() {
 }
 
 /** Uppdaterar läget på fågeln */
-function update() {
+function update(deltaTime) {
     //birdEntity move
 
     if (birdEntity.alive === true) {
         if (birdEntity.x > 0) {
             if ('ArrowLeft' in keysDown) { // Vänster     
-                birdEntity.x -= 5;
+                birdEntity.x -= birdEntity.speed*deltaTime;
+
             }
         }
         if (birdEntity.x < canvas.width - birdEntity.img.width) {
             if ('ArrowRight' in keysDown) { // Höger
-                birdEntity.x += 5;
+                birdEntity.x += birdEntity.speed*deltaTime;
             }
         }
         if (birdEntity.y > 0) {
             if ('ArrowUp' in keysDown) { // Upp
-                birdEntity.y -= 5;
+                birdEntity.y -= birdEntity.speed*deltaTime;
             }
         }
         if (birdEntity.y < canvas.height - birdEntity.img.height) {
             if ('ArrowDown' in keysDown) { // Ner
-                birdEntity.y += 5;
+                birdEntity.y += birdEntity.speed*deltaTime;
             }
         }
         if ('k' in keysDown) { // Ner
@@ -127,30 +139,31 @@ function update() {
     }
 
 
-    
+
+    for(let m = 0; m<arrayOfCats; m++){    
     //catEntity Move 
-    if (catEntity.alive === true) {
-        if (catEntity.x > 0) {
+    if (arrayOfCats[m].alive === true) {
+        if (arrayOfCats[m].alive.x > 0) {
             if ('a' in keysDown) { // Vänster     
-                catEntity.x -= 5;
+                arrayOfCats[m].alive.x -= 5;
             }
         }
 
-        if (catEntity.x < canvas.width - catEntity.img.width) {
+        if (arrayOfCats[m].alive.x < canvas.width - arrayOfCats[m].alive.img.width) {
             if ('d' in keysDown) { // Höger
-                catEntity.x += 5;
+                arrayOfCats[m].alive.x += 5;
             }
         }
 
-        if (catEntity.y > 0) {
+        if (arrayOfCats[m].alive.y > 0) {
             if ('w' in keysDown) { // Upp
-                catEntity.y -= 5;
+                arrayOfCats[m].alive.y -= 5;
             }
         }
 
-        if (catEntity.y < canvas.height - catEntity.img.height) {
+        if (arrayOfCats[m].alive.y < canvas.height - arrayOfCats[m].alive.img.height) {
             if ('s' in keysDown) { // Ner
-                catEntity.y += 5;
+                arrayOfCats[m].alive.y += 5;
             }
         }
 
@@ -160,14 +173,8 @@ function update() {
             console.log("clear");
         }
 
-
+        }
     }
-
-
-
-    //checkHit(birdEntity, catEntity);
-
-
     for (let i = 0; i < 5; i++) { //NY
         if (arrayOfCats[i].alive) {
             if (checkHit(birdEntity, arrayOfCats[i])) {
@@ -178,23 +185,17 @@ function update() {
     }
 
 
-
-    if (birdEntity.alive === false) {
+   if (birdEntity.alive === false) {
         delete birdEntity;
         //ändra så att Entitiys sparas i en array och deletas/ tas bort, om alive == false;
         //   console.log("dead");
     }
-
-
     if (catEntity.alive === false) {
         delete catEntity;
-
         //ändra så att Entitiys sparas i en array och deletas/ tas bort, om alive == false;
         //   console.log("dead");
     }
-
-
-
+ 
 
     if ('r' in keysDown) { // test
         console.log("restarting games");
@@ -217,16 +218,11 @@ function checkHit(spriteOne, spriteTwo) {
             && spriteTwo.y <= (spriteOne.y + spriteOne.img.height) &&
             spriteOne.y <= (spriteTwo.y + spriteTwo.img.height)) {
             console.log("hit");
-            spriteOne.alive = false;
+        //    spriteOne.alive = false;
             spriteTwo.alive = false;
             console.log(spriteOne.alive);
             console.log(spriteTwo.alive);
             console.log("birdEntity and catEntity are dead and cant move")
-
-
-
-
-
             return true;
         } else
             return false;

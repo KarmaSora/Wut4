@@ -20,6 +20,10 @@ class Sprite {
         ctx.drawImage(this.img, this.x, this.y);
     }
 
+    move(deltaTime){
+        
+    }
+
 
  }
  
