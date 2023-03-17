@@ -6,7 +6,9 @@ let catImage = new Image();
 catImage.src = "images/cat.png";
 
 // Position
-let xPos = 260, yPos = 220, speed = 200;
+let xPos = 60, yPos = 120, speed = 50;
+let birdDx = 0,birdDy = 0;
+let catDx = 0,catDy = 0;
 
 //importera filen, fixa felet  -Karam
 let birdEntity, catEntity;
@@ -20,16 +22,20 @@ let widthOfCanvas;
 let arrayOfCats;
 let then;
 
+let hitSound = new Audio('./fire.mp3');
+hitSound.load();
+
+
 /** Körs då sidan är laddad */
 function init() {
 
     then = Date.now();
-    birdEntity = new Sprite(xPos, yPos + 200, birdImg, speed, true);
+    birdEntity = new Sprite(xPos, yPos + 200, birdImg, speed, birdDx,birdDy,  true);
 
 
     arrayOfCats = new Array();
     for (let j = 0; j < 6; j++) {
-        catEntity = new Sprite(xPos + 100 * j, yPos, catImage, speed, true);
+        catEntity = new Sprite(xPos + 100 * j, yPos, catImage, speed,catDx,catDy, true);
         arrayOfCats.push(catEntity);
     }
 
@@ -111,6 +117,10 @@ function render() {
 function update(deltaTime) {
     //birdEntity move
 
+
+    birdEntity.move(deltaTime);
+
+
     if (birdEntity.alive === true) {
         if (birdEntity.x > 0) {
             if ('ArrowLeft' in keysDown) { // Vänster     
@@ -125,6 +135,7 @@ function update(deltaTime) {
         }
         if (birdEntity.y > 0) {
             if ('ArrowUp' in keysDown) { // Upp
+                
                 birdEntity.y -= birdEntity.speed*deltaTime;
             }
         }
@@ -167,8 +178,6 @@ function update(deltaTime) {
             }
         }
 
-
-
         if ('k' in keysDown) { // test
             console.log("clear");
         }
@@ -179,8 +188,10 @@ function update(deltaTime) {
         if (arrayOfCats[i].alive) {
             if (checkHit(birdEntity, arrayOfCats[i])) {
                 arrayOfCats[i].alive = false;
-            }
 
+				hitSound.play();
+            }
+            arrayOfCats[i].y +=  arrayOfCats[i].speed*deltaTime;
         }
     }
 
@@ -232,6 +243,7 @@ function checkHit(spriteOne, spriteTwo) {
 function gamePageRestart() {
     window.location.reload();
 }
+
 
 
 window.onload = init;
