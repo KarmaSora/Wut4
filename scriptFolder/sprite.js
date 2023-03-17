@@ -1,7 +1,7 @@
 /**
 * Sprite-klass för spelfigurer
 */
- class Sprite {
+ export class Sprite {
     /**
      * Konstruktor
      * @param x       x-läget
@@ -27,28 +27,31 @@
 
     move(deltaTime){
 
-        this.x += this.dx * (deltaTime / 1000000000.0) * speed;
-		this.y += this.dy * (deltaTime / 1000000000.0) * speed;
+        this.x += this.dx * (deltaTime) * this.speed;
+		this.y += this.dy * (deltaTime) * this.speed;
+//        console.log("x=" + this.x);
 
     }
-     getEntityDx(){
-        return dx;
+  
+    getDx() {
+        return this.dx; //
     }
     
-     getEntityDy(){
-        return dy;
-    }
+    getDy() {
+        return this.dy; 
+     }
     
-     setEntityDx(dx){
+    setDx(dx) {
         this.dx = dx;
+       }
+    
+    setDy(dy) {
+        this.dy = dy; 
     }
-     setEntityDy(dy){
-        this.dy = dy;
-    }
-
-
+    setImage(img){
+    this.img=img;}
  }
  
-
+//export{Sprite};
 
 
