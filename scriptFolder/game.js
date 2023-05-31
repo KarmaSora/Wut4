@@ -6,6 +6,8 @@ birdImg.src = "images/bird.png";
 let catImage = new Image();
 catImage.src = "images/cat.png";
 
+let deadCatImage= new Image();
+deadCatImage.src = "images/flyingCat.png";
 // Position
 let xPos = 60, yPos = 120, speed = 20;
 let birdDx = 0, birdDy = 0;
@@ -24,13 +26,12 @@ let arrayOfCats;
 let then;
 
 let hitSound = new Audio('./fire.mp3');
-hitSound.load();
 
 
 /** Körs då sidan är laddad */
 function init() {
     then = Date.now();
-    birdEntity = new Sprite(xPos, yPos + 200, birdImg, speed, birdDx, birdDy, true);
+    birdEntity = new Sprite(xPos, yPos + 200, birdImg, speed*10, birdDx, birdDy, true);
 
     arrayOfCats = new Array();
     for (let j = 0; j < 6; j++) {
@@ -141,30 +142,31 @@ function update(deltaTime) {
       
     }
 
+    //karam: vet inte om detta behövs
     for (let m = 0; m < arrayOfCats; m++) {
         //catEntity Move 
         if (arrayOfCats[m].alive === true) {
-            if (arrayOfCats[m].alive.x > 0) {
+            if (arrayOfCats[m].x > 0) {
                 if ('a' in keysDown) { // Vänster     
-                    arrayOfCats[m].alive.x -= 5;
+                    arrayOfCats[m].x -= 5;
                 }
             }
 
-            if (arrayOfCats[m].alive.x < canvas.width - arrayOfCats[m].alive.img.width) {
+            if (arrayOfCats[m].x < canvas.width - arrayOfCats[m].img.width) {
                 if ('d' in keysDown) { // Höger
-                    arrayOfCats[m].alive.x += 5;
+                    arrayOfCats[m].x += 5;
                 }
             }
 
-            if (arrayOfCats[m].alive.y > 0) {
+            if (arrayOfCats[m].y > 0) {
                 if ('w' in keysDown) { // Upp
-                    arrayOfCats[m].alive.y -= 5;
+                    arrayOfCats[m].y -= 5;
                 }
             }
 
-            if (arrayOfCats[m].alive.y < canvas.height - arrayOfCats[m].alive.img.height) {
+            if (arrayOfCats[m].y < canvas.height - arrayOfCats[m].img.height) {
                 if ('s' in keysDown) { // Ner
-                    arrayOfCats[m].alive.y += 5;
+                    arrayOfCats[m].y += 5;
                 }
             }
 
@@ -172,17 +174,17 @@ function update(deltaTime) {
 
         }
 
-        if(arrayOfCats[m].alive == false){
-            catEntity.setImage(birdImg);
-        }
+      
 
     }
     for (let i = 0; i < 5; i++) { //NY
         if (arrayOfCats[i].alive) {
             if (checkHit(birdEntity, arrayOfCats[i])) {
-                arrayOfCats[i].alive === false;
+                arrayOfCats[i].alive == false;
 
+                hitSound.load();
                 hitSound.play();
+                
             }
             arrayOfCats[i].y += arrayOfCats[i].speed * deltaTime;
         }
@@ -224,7 +226,11 @@ function checkHit(spriteOne, spriteTwo) {
             spriteOne.y <= (spriteTwo.y + spriteTwo.img.height)) {
             console.log("hit");
             //    spriteOne.alive = false;
-            spriteTwo.alive = false;
+         //   spriteTwo.alive = false;
+
+             spriteTwo.setImage(deadCatImage);       //kan funka som exemepl på animation
+                    
+
             console.log(spriteOne.alive);
             console.log(spriteTwo.alive);
             console.log("birdEntity and catEntity are dead and cant move")
